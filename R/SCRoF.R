@@ -12,7 +12,7 @@
 #' Achim, A. (2025). Signal cancellation recovery of factors and meta-factors. \emph{Prooceedingd of the 89th Annual Meeting of the Psychometric Society}. Spring, Prague
 #' 
 #' @author 
-#' Andr?? Achim (MATLAB)
+#' André Achim (MATLAB)
 #' Pier-Olivier Caron (R)
 #' 
 #' @import stats Rnest utils
@@ -30,14 +30,14 @@ SCRoF <- function(R, N = NULL, seuils = c(.001,.25)){
   if(is.null(N)) {AS$N = nrow(R)} else {AS$N = N}
   if(isSymmetric(as.matrix(R))) {AS$R <- R} else {AS$R <- cov(R)}
   AS$seuils <- sort(seuils)
-  AS$et <- sqrt(diag(AS$R)) # AA: Ceci est destin?? ?? pouvoir exprimer la solution factorielle en termes des variables d'origine.
+  AS$et <- sqrt(diag(AS$R)) # AA: Ceci est destiné à pouvoir exprimer la solution factorielle en termes des variables d'origine.
   iet <-  1 / AS$et
   AS$R <- AS$R*(iet %*% t(iet))
-  if(det(AS$R) < 0) stop("\nLa matrice de corr??lation n'a pas un d??terminant positif.\n")
+  if(det(AS$R) < 0) stop("\nLa matrice de corrélation n'a pas un déterminant positif.\n")
   rNEST <- Rnest::nest(AS$R, n = AS$N)
   rPA <- Rnest::pa(rNEST)
-  cat("NEST sugg??re", rNEST$nfactors, "facteurs.\n")
-  cat("PA sugg??re", rPA$nfactors, "facteurs.\n")
+  cat("NEST suggère", rNEST$nfactors, "facteurs.\n")
+  cat("PA suggère", rPA$nfactors, "facteurs.\n")
   AS$minFct <- rNEST$nfactors[[1]]
   
   # START HERE
@@ -54,7 +54,7 @@ SCRoF <- function(R, N = NULL, seuils = c(.001,.25)){
   AS <- asInitFct_Cor(AS) # CHECK 
   AS <- agregeParCorr(AS) # TODO : POC check with another dataset
   
-  if(length(AS$VG[[1]]$Gr) < 3){ # ?? quoi ??a sert?
+  if(length(AS$VG[[1]]$Gr) < 3){ # à quoi ça sert?
     AS$VG[[1]]$coplan <- numeric()
     AS$VG[[1]]$GrCoplan <- numeric()
   }
@@ -67,18 +67,18 @@ SCRoF <- function(R, N = NULL, seuils = c(.001,.25)){
   while (brG < length(AS$VG)) {
     brG <- brG + 1
     
-    # V??rification si coplan n'est pas vide et que la premi??re valeur est inf??rieure ?? 1
+    # Vérification si coplan n'est pas vide et que la première valeur est inférieure à 1
     if (!is.null(AS$VG[[brG]]$coplan) && AS$VG[[brG]]$coplan[[1]] < 1) {
       AS <- asGereCoplanaire(AS, brG)
     }
     
-    # V??rification si coplan est vide ou si les conditions de rang de grappe ou probabilit?? sont respect??es
+    # Vérification si coplan est vide ou si les conditions de rang de grappe ou probabilité sont respectées
     if (is.null(AS$VG[[brG]]$coplan) || AS$VG[[brG]]$coplan[[1]] >= 1 || AS$VG[[brG]]$coplan[[1]] < AS$seuils[length(AS$seuils)]) {
       AS <- asGereReste(AS, brG)  # si coplan vide ou rang de grappe ou prob. < .25
       #POC:
       #       Messages d'avis :
       # 1: Dans max(CritTuple, na.rm = TRUE) :
-      #   aucun argument pour max ; -Inf est renvoy??
+      #   aucun argument pour max ; -Inf est renvoyé
       
     }
   }
