@@ -7,8 +7,12 @@ Authors@R:
              family = "Caron",
              role = c("aut","cre","cph"),
              email = "pocaron19@gmail.com",
-             comment = c(ORCID = "0000-0001-6346-5583")))
-Author: P.-O. Caron [aut, cre]
+             comment = c(ORCID = "0000-0001-6346-5583")),
+             person(given = "André",
+             family = "Achim",
+             role = c("aut","cph")),
+             email = "achim.andre@uqam.ca")
+Author: P.-O. Caron [aut, cre, cph], André Achim [aut, cph]
 Maintainer: P.-O. Caron <pier-olivier.caron@teluq.ca>
 Description: Signal Cancelling Factor Analysis.
 License: CC BY 4.0
@@ -18,4 +22,6 @@ RoxygenNote: 7.3.2
 Imports:
   lavaan (>= 0.6-17),
   Rnest (>= 1.0),
-  CCP (>= 1.2)
+  CCP (>= 1.2),
+  MASS (>= 7.3-61),
+  psych (>= 2.5.3)
