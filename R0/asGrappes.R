@@ -5,6 +5,7 @@ asGrappes <- function(AS) {
   # du lien plutôt que celle du pire
   # Détermine quels liens sont dans la fourchette AS$seuils[1]=.001 à AS$seuils[2]=.25
   # et crée des branches en fonction de cela, enlevant les liaisons dans l'ordre inverse de leur formation
+  
   AS <- asDistances(AS)
   Z <- linkage(AS$Dist)
   nv <- length(AS$pertinent)
@@ -20,31 +21,26 @@ asGrappes <- function(AS) {
     b <- Gr[[Z[k, 2]]]
     nx <- length(a) * length(b)
     nz <- nz + 1
-    #    pr[k] <- 1 - pchisq(Z[k,3], nv - 2)^nx  # probabilité ajustée
-    # la distance est maintenant -log10(pa) où pa est déjà la probabilité ajustée
-    # Cette probabilité ne serait plus requise mais on la laisse pour compatibilité historique avec la suite
-    #    p <- 10^-Z[k,3]
-    p <- prodCorr(Z[k,3],AS$N)$p
-    pr[k] <- 1 - (1-p)^nx
+    pr[k] <- 1 - pchisq(Z[k,3], nv - 2)^nx  # probabilité ajustée
     Gr[[nv + nz]] <- sort(c(a, b))
   }
   AS$GrBrut <- Gr[(nv + 1):length(Gr)]
   AS$Z <- cbind(Z, pr)
-  if (max(pr) < min(AS$seuils)) { # POC : ajouter min au lieu de AS$seuils[1]
+  if (max(pr) < AS$seuils[1]) {
     AS$VG[[1]] <- list(Gr = NULL, Creat = 'Initial (vide)', Parent = 0, coplan = NULL)
     return(AS)
   }
-  if (any(pr > max(AS$seuils))) # POC : ajouter max au lieu de AS$seuils[2]
-    c <- tail(which(pr > max(AS$seuils)), 1) #  POC : idem
-  else
+  c <- tail(which(pr > AS$seuils[2]), 1)
+  if (is.null(c)) {
     c <- -nv
+  }
   Gr0 <- Gr[seq_len(nv + c)]
   res <- asNettoie(Gr0)
   
   #POC: Here is start to split into two according to seuils ####
   
   AS$VG[[1]] <- list(Gr = res$Gr, reste = res$reste, Creat = if (nv > 0) 'Initial' else 'Initial (vide)', Parent = 0)
-  f <- which(pr > min(AS$seuils) & pr < max(AS$seuils)) # POC : idem
+  f <- which(pr > AS$seuils[1] & pr < AS$seuils[2])
   
   if (length(f) != 0) {
     

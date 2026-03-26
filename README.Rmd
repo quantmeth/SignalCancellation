@@ -36,7 +36,7 @@ library(Rnest)
 
 # SignalCancellation : An R package for
 
-The library `SignalCancellation` offers the `scrof`, `SCROF`, or `SCRoF` function for Signal cancellation recovery of factors [@Achim25;@Achim24].
+The library `SignalCancellation` offers the `scrof`, `SCROF`, or `SCRoF` function for Signal cancellation recovery of factors [@Achim24].
 
 <!-- (NEST; Achim, 2017; 2020) to determine the number of dimensions in exploratory factor analysis. It provides a main function `nest()` to carry the analysis, a `plot()` function a many utilit. It has been showed to amongst the best stopping rule to determine the nuber of factor in factor analysis [@Achim21;@Caron25;@Bran24]. -->
 
@@ -60,41 +60,44 @@ The CRAN package will be available eventually.
 # library(SignalCancellation)
 ```
 
-<!-- # Examples -->
+# Examples
 
-<!-- Here is an example using the `ex_4factors_corr` correlation matrix from the `Rnest` library [@Caron25]. The factor structure is -->
+Here is an example using the `ex_4factors_corr` correlation matrix from the `Rnest` library [@Caron25]. The factor structure is
 
-<!-- ```{r factstruct, echo = FALSE, out.height="50%", out.width="50%", imgcenter='center'} -->
-<!-- knitr::include_graphics("inst/ex_4factors_corr.png") -->
-<!-- ``` -->
+```{r factstruct, echo = FALSE, out.height="50%", out.width="50%", imgcenter='center'}
+knitr::include_graphics("inst/ex_4factors_corr.png")
+```
 
-<!-- and the correlation matrix is -->
+and the correlation matrix is
 
-<!-- ```{r writecor, echo = FALSE, results='asis'} -->
-<!-- #write_matex(ex_4factors_corr) -->
-<!-- Rex <- ifelse(ex_4factors_corr == 0, "", sprintf("%.3f", ex_4factors_corr)) -->
-<!-- diag(Rex) <- "1" -->
-<!-- #Rex <- gsub("0.", x = Rex, ".") -->
-<!-- Rex <- sub("^0+", "", Rex) -->
-<!-- write_matex(Rex) -->
-<!-- ``` -->
+```{r writecor, echo = FALSE, results='asis'}
+#write_matex(ex_4factors_corr)
+Rex <- ifelse(ex_4factors_corr == 0, "", sprintf("%.3f", ex_4factors_corr))
+diag(Rex) <- "1"
+#Rex <- gsub("0.", x = Rex, ".")
+Rex <- sub("^0+", "", Rex)
+write_matex(Rex)
+```
 
-<!-- From `ex_4factors_corr`, we can easily generate random data using the `MASS` packages [@MASS]. -->
+From `ex_4factors_corr`, we can easily generate random data using the `MASS` packages [@MASS].
 
-<!-- ```{r gendata} -->
-<!-- set.seed(1) -->
-<!-- mydata <- MASS::mvrnorm(n = 2500, -->
-<!--                         mu = rep(0, ncol(Rnest::ex_4factors_corr)), -->
-<!--                         Sigma = Rnest::ex_4factors_corr) -->
-<!-- ``` -->
+```{r gendata}
+set.seed(2)
+mydata <- MASS::mvrnorm(n = 240,
+                        mu = rep(0, ncol(Rnest::ex_4factors_corr)),
+                        Sigma = Rnest::ex_4factors_corr)
+```
 
-<!-- We can then carry NEST. -->
+We can then carry signal cancellation factor analysis (SCFA).
 
-<!-- # ```{r scrof1} -->
-<!-- # res <- scrof(N1000_1) -->
-<!-- # res$ -->
-<!-- # res$VG -->
-<!-- # ``` -->
+```{r scfa1}
+res <- scfa(mydata)
+res$nfactors
+```
+
+This output yields the number of factors. 
+
+Further development will follow.
 
 <!-- The first output tells hom many factors NEST suggests. We can also consult the summary with -->
 

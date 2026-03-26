@@ -24,7 +24,7 @@
 #' 
 #' @examples
 #' res <- SCRoF(N1000_1)
-SCRoF <- function(R, N = NULL, seuils = c(.001,.25)){
+SCRoF <- function(R, N = NULL, seuils = c(.001, .25)){
   # Preliminaries ####
   AS <- list(dat = R)
   if(is.null(N)) {AS$N = nrow(R)} else {AS$N = N}
@@ -50,6 +50,8 @@ SCRoF <- function(R, N = NULL, seuils = c(.001,.25)){
   # SCFA starts here ####
   AS <- asPairesIndicatrices(AS)
   AS <- asGrappes(AS)
+  
+  
   if(is.null(AS$VG)) {cat('\nAucune annulation du signal par paire.\n')}
   AS <- asInitFct_Cor(AS) # CHECK 
   AS <- agregeParCorr(AS) # TODO : POC check with another dataset
