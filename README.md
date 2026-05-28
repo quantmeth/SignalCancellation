@@ -1,5 +1,5 @@
 
-# SignalCancellation : An R package for
+# SignalCancellation : An R package for Signal Cancellation Analysis
 
 The library `SignalCancellation` offers the `scrof`, `SCROF`, or `SCRoF`
 function for Signal cancellation recovery of factors (Achim, 2024).
@@ -71,7 +71,138 @@ res$nfactors
 
 This output yields the number of factors.
 
-Further development will follow.
+We can also try the Tabachnick & Fidell (2019) correlation matrix
+directly.
+
+``` r
+# remove unique variable
+TF <- Rnest::tabachnick_fidell2019[-11,-11]
+res <- scfa(TF, n = 175) 
+res$nfactors
+```
+
+    ## [1] 2
+
+The saturation and correlation between factors are found here (from
+`test_k_dim`).
+
+``` r
+res$scfa[[1]]$satur
+```
+
+    ##              [,1]        [,2]
+    ##  [1,]  0.05559173  -0.6634601
+    ##  [2,]  0.56429449  -0.9807931
+    ##  [3,] -0.05440381  -0.8052882
+    ##  [4,]  0.54122032  -0.9888514
+    ##  [5,]  0.75262152   0.0000000
+    ##  [6,] -0.02290866  -1.2428200
+    ##  [7,]  3.07623785  -3.4433515
+    ##  [8,]  2.82460633  -4.4367350
+    ##  [9,]  0.00000000   0.6427794
+    ## [10,] 15.95627793 -16.7530141
+
+``` r
+res$scfa[[1]]$Rfct
+```
+
+    ##           [,1]      [,2]
+    ## [1,] 1.0000000 0.6148903
+    ## [2,] 0.6148903 1.0000000
+
+There is a function to compute the correlation matrix by excluding
+factors.
+
+``` r
+# does not work if no AB
+# out <- factor_exclusion(res$AS)
+# round(out$Corr,2)
+```
+
+Inspection can be done with the following function. It yields the
+residual covariances, their *p*-values and partial correlations.
+
+``` r
+tf15 <- factor_test(AS = res$AS, c(1,5))
+sapply(tf15, round, 2, simplify = FALSE)
+```
+
+    ## $residual.cov
+    ##       b     c     d     f    g    h    i    j
+    ## b    NA  0.47  0.14  0.78 0.00 0.42 0.02 0.01
+    ## c  0.04    NA  0.97  0.49 0.71 0.11 0.19 0.21
+    ## d  0.09  0.00    NA  0.89 0.02 0.02 0.53 0.09
+    ## f -0.02  0.05 -0.01    NA 0.42 0.37 0.37 0.40
+    ## g  0.20 -0.03  0.15 -0.06   NA 0.01 0.00 0.00
+    ## h  0.05  0.11  0.16  0.06 0.18   NA 0.00 0.00
+    ## i  0.16  0.08  0.04 -0.06 0.28 0.28   NA 0.00
+    ## j  0.17 -0.09  0.11 -0.06 0.29 0.20 0.32   NA
+    ## 
+    ## $partial.cor
+    ##       b     c     d     f     g    h     i     j
+    ## b    NA  0.05  0.11 -0.02  0.22 0.06  0.18  0.19
+    ## c  0.05    NA  0.00  0.05 -0.03 0.12  0.10 -0.09
+    ## d  0.11  0.00    NA -0.01  0.17 0.18  0.05  0.13
+    ## f -0.02  0.05 -0.01    NA -0.06 0.07 -0.07 -0.06
+    ## g  0.22 -0.03  0.17 -0.06    NA 0.18  0.29  0.30
+    ## h  0.06  0.12  0.18  0.07  0.18   NA  0.29  0.21
+    ## i  0.18  0.10  0.05 -0.07  0.29 0.29    NA  0.33
+    ## j  0.19 -0.09  0.13 -0.06  0.30 0.21  0.33    NA
+
+there is also this.
+
+``` r
+inspection_scfa(res)
+```
+
+    ##    var1 var2  Prob  sat1  sat2 check
+    ## 1     1    2 0.069 0.710 0.658      
+    ## 2     1    3 0.140 0.828 0.597      
+    ## 3     1    4 0.170 0.747 0.687      
+    ## 4     1    5 0.268 0.791 0.790      
+    ## 5     1    6 0.978 0.826 0.418      
+    ## 6     1    7 0.000 0.621 0.370     *
+    ## 7     1    8 0.001 0.701 0.288     *
+    ## 8     1    9 0.000 0.582 0.394     *
+    ## 9     1   10 0.000 0.714 0.259     *
+    ## 10    2    3 0.005 0.705 0.556     *
+    ## 11    2    4 0.452 0.716 0.712      
+    ## 12    2    5 0.086 0.699 0.760      
+    ## 13    2    6 0.201 0.699 0.337      
+    ## 14    2    7 0.098 0.747 0.544      
+    ## 15    2    8 0.112 0.560 0.333      
+    ## 16    2    9 0.005 0.682 0.541     *
+    ## 17    2   10 0.002 0.724 0.445     *
+    ## 18    3    4 0.043 0.552 0.669     *
+    ## 19    3    5 0.434 0.552 0.701      
+    ## 20    3    6 0.912 0.645 0.417      
+    ## 21    3    7 0.002 0.421 0.369     *
+    ## 22    3    8 0.004 0.604 0.375     *
+    ## 23    3    9 0.000 0.524 0.520     *
+    ## 24    3   10 0.014 0.230 0.187     *
+    ## 25    4    5 0.104 0.700 0.768      
+    ## 26    4    6 0.642 0.694 0.374      
+    ## 27    4    7 0.015 0.720 0.513     *
+    ## 28    4    8 0.006 0.807 0.370     *
+    ## 29    4    9 0.041 0.564 0.464     *
+    ## 30    4   10 0.001 0.662 0.406     *
+    ## 31    5    6 0.680 0.770 0.382      
+    ## 32    5    7 0.001 0.675 0.423     *
+    ## 33    5    8 0.018 0.521 0.254     *
+    ## 34    5    9 0.000 0.721 0.412     *
+    ## 35    5   10 0.000 0.586 0.316     *
+    ## 36    6    7 0.020 0.199 0.378     *
+    ## 37    6    8 0.012 0.309 0.480     *
+    ## 38    6    9 0.022 0.186 0.391     *
+    ## 39    6   10 0.003 0.124 0.281     *
+    ## 40    7    8 0.194 0.557 0.446      
+    ## 41    7    9 0.370 0.590 0.648      
+    ## 42    7   10 0.883 0.618 0.588      
+    ## 43    8    9 0.169 0.480 0.731      
+    ## 44    8   10 0.144 0.461 0.550      
+    ## 45    9   10 0.192 0.696 0.573
+
+Further developments will follow.
 
 <!-- The first output tells hom many factors NEST suggests. We can also consult the summary with -->
 <!-- ```{r summarynest} -->
@@ -106,7 +237,7 @@ a = TRUE) -->
 
 # How to cite
 
-Caron, P.-O. (2025). *SignalCancellation*.
+Caron, P.-O. & Achim, A. (2025). *SignalCancellation*.
 <https://github.com/quantmeth/SignalCancellation>
 
 # References
@@ -127,6 +258,13 @@ Caron, P.-O. (2025). A comparison of the next eigenvalue sufficiency
 test to other stopping rules for the number of factors in factor
 analysis. *Educational and Psychological Measurement*.
 <https://doi.org/10.1177/00131644241308528>
+
+</div>
+
+<div id="ref-TB19" class="csl-entry">
+
+Tabachnick, B. G., & Fidell, L. S. (2019). *Using multivariate
+statistics*. Allyn; Bacon.
 
 </div>
 

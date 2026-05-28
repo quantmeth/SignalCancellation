@@ -1,40 +1,61 @@
-test_k_dim <- function(AS, k){
-  AS$GS[,AS$orphelines] <- AS$colOrphelines # remettre dans $GS les colonnes des orphelines
-  if (length(k) > 1){
+test_k_dim <- function(AS,k){
+  ASk <- AS  # est-ce requis pour ne pas modifier AS en dehors de cette fonction?
+  ASk$GS[,AS$orphelines] <- AS$colOrphelines # remettre dans $GS les colonnes des orphelines
+  ASk$pertinent <- 1:ASk$nv
+  if (length(k)>1){
     tuple <- k
     k <- length(k)
-    me <- list(stats = NA)
+    me <- list(stats=NA)
   } else {
-    
-    if (k < 2) stop("Ne fonctionne pas pour 1 dimension.")
-    
-    fa <- Rnest::fareg(AS$R, k)
-    Rreduit <- AS$R
+    if (k<2) stop("Ne marche pas pour 1 dimension")
+    # fa <- Rnest::fareg(ASk$R,k)
+    fa <- fareg(ASk$R,k)
+    Rreduit <- ASk$R
     diag(Rreduit) <- fa$h2
-    
-    if (k > 2){
-
-      me <- meilleur_k_tuple(AS, k, Rreduit) # melange?
-    
-      } else {
-      rg <- which.min(AS$Prob)
-      me <- list(meilleur = AS$Cpaires[,rg],
-                 stats = c(AS$Prob[rg],
-                         AS$Crit[rg]))
+    if (k>2){
+      meilleur_k_tuple <- function(AS,k){
+        var <- AS$pertinent
+        cmb <- combn(var,k)
+        ei <- 0
+        for (j in 1:ncol(cmb)){
+          r <- Rreduit[cmb[,j],cmb[,j]]
+          eig <- eigen(r,only.values=TRUE)$values[k]
+          if (eig>ei){
+            ei <- eig
+            meilleur <- cmb[,j]
+          }
+        }
+        if (ei<=0) error('Anomalie: aucun ',k,'-tuple avec toutes ses valeurs propres positives')
+        ou <- optim_tuple(AS,meilleur);
+        return(list(meilleur=meilleur,stats=c(ou$prob,ou$cor,ei,ou$poids)))
+        # stats: 1 prob, 1 min(corr), 1 k-ieme eig val, k*k poids
+        # (chaque variable en premier) (à préciser) 
+      }
+      me <- meilleur_k_tuple(AS,k) # AS, pas ASk, on ne veut pas retenir une variable soupçonnée orpheline
+    }
+    else{
+      rg <- which.min(ASk$Prob)
+      me <- list(meilleur=AS$Cpaires[,rg],stats=c(AS$Prob[rg],AS$Crit[rg]))
     }
     tuple <- me$meilleur
   }
-  var <- setdiff(1:AS$nv,tuple)
-  satur <- matrix(0,nrow=AS$nv,ncol=k) # faut-il un ajustement pour les orphelines?
-  dSat <- sqrt(fa$h2[tuple])
-  diag(satur[tuple,]) <- dSat
+  var <- setdiff(1:ASk$nv,tuple)
+  satur <- matrix(0,nrow=ASk$nv,ncol=k) # faut-il un ajustement pour les orphelines?
+  ampl <- sqrt(fa$h2) # longueur estimée du signal de chaque variable 
+  diag(satur[tuple,]) <-ampl[tuple]  # poids des variables explicatives sur leur direction
+  # dSat <- sqrt(fa$h2[tuple])
+  # diag(satur[tuple,]) <- dSat
+  VE <- sweep(ASk$GS[,tuple],2,ampl[tuple],"/")
+  browser
   out <- NULL
   for (k in var){
     variables <- c(k,tuple)
-    ou <- optim_tuple(AS,variables)
+    # if (k==10) browser()
+    ou <- optim_tuple(ASk,variables)
     satur[k,] <- -ou$meilPoids[-1] * dSat
-    out <- rbind(out, c(variables,ou$prob))
+    out <- rbind(out,c(variables,ou$prob))
   }
+  browser()
   R <- Rreduit[tuple,tuple]
   d <- diag(1/sqrt(diag(R)))
   R <- d %*% R %*% d
@@ -45,7 +66,7 @@ test_k_dim <- function(AS, k){
 }
 
 ajustePolarites <- function(satur,Rfct,Rreduit){
-  v <- which(rowSums(satur == 0) == 0)
+  v <- which(rowSums(satur==0)==0)
   s <- polarites_de_correlations(Rreduit[v,v])
   for (k in 1:(10*length(v))){
     V <- satur %*% Rfct %*% t(satur)
@@ -62,7 +83,7 @@ ajustePolarites <- function(satur,Rfct,Rreduit){
   return(satur)  
 }
 
-polarites_de_correlations <- function(R, e = 2){
+polarites_de_correlations <- function(R,e=2){
   diag(R) <- 0
   sR <- sign(R)
   s <- sign(rowSums(sR * abs(R)^e))

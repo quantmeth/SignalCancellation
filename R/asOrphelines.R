@@ -6,7 +6,11 @@ asOrphelines <- function(AS) {
   z2 <- mxR^2 * (AS$N - 1)
   AS$pOrpheline <- 1 - pchisq(z2, 1)^(AS$nv - 1)
   # f <- which((AS$pOrpheline > .01) | (mxR < .1))
-  f <- which(AS$pOrpheline > AS$seuils[1])  # POC: Why seuils[1]? # POC VÉRIFIER SIGN
+  
+  # POC : À changer 1 -> AS$seuils[1]
+  f <- which(AS$pOrpheline > 1)  # POC: Why seuils[1]? # POC VÉRIFIER SIGN
+  
+  
   AS$orphelines <- f
   if (length(f) > 0) {
     AS$colOrphelines <- as.matrix(AS$GS[, f])

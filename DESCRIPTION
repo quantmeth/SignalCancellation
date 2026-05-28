@@ -20,7 +20,8 @@ RoxygenNote: 7.3.3
 Imports:
   Rnest (>= 1.0),
   MASS (>= 7.3-55),
-  expm (>= 1.0-0)
+  expm (>= 1.0-0),
+  stringr (>= 1.6)
 Suggests:
   lavaan (>= 0.6-17),
   CCP (>= 1.2),

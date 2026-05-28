@@ -111,8 +111,7 @@ scfa <- function(.data, ..., n = NULL, alpha = .05, max.fact = NULL, missing = N
   #R$convergence <- TRUE
   
   # check .max.fact ####
-  
-  max.fact <- ncol(R$cor)-1 
+  if(is.null(max.fact)) max.fact <- Rnest::Ledermann(ncol(R$cor))-1 #ncol(R$cor)-1 
   
   # SCFA ####
   AA <- init_SCA(R = R$cor, N = R$n, seuils = R$alpha)
@@ -120,6 +119,8 @@ scfa <- function(.data, ..., n = NULL, alpha = .05, max.fact = NULL, missing = N
   # is alpha the same as seuils? 
   # check for k == 1?  
   out  <- list()
+  
+  # METTRE un chec pour k=0 etk=1
   for(k in 2:max.fact){
     out[[k-1]] <- test_k_dim(AA, k)
     # add convergence issue?

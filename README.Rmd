@@ -34,7 +34,7 @@ knitr::knit_hooks$set(imgcenter = function(before, options, envir){
 library(Rnest)
 ```
 
-# SignalCancellation : An R package for
+# SignalCancellation : An R package for Signal Cancellation Analysis
 
 The library `SignalCancellation` offers the `scrof`, `SCROF`, or `SCRoF` function for Signal cancellation recovery of factors [@Achim24].
 
@@ -94,10 +94,48 @@ We can then carry signal cancellation factor analysis (SCFA).
 res <- scfa(mydata)
 res$nfactors
 ```
-
 This output yields the number of factors. 
 
-Further development will follow.
+We can also try the @TB19 correlation matrix directly.
+
+```{r scfa2}
+# remove unique variable
+TF <- Rnest::tabachnick_fidell2019[-11,-11]
+res <- scfa(TF, n = 175) 
+res$nfactors
+```
+
+The saturation and correlation between factors are found here (from `test_k_dim`).
+
+```{r}
+res$scfa[[1]]$satur
+res$scfa[[1]]$Rfct
+```
+
+
+There is a function to compute the correlation matrix by excluding factors.
+
+```{r fe1}
+# does not work if no AB
+# out <- factor_exclusion(res$AS)
+# round(out$Corr,2)
+```
+
+Inspection can be done with the following function. It yields the residual covariances, their *p*-values and partial correlations.
+
+```{r}
+tf15 <- factor_test(AS = res$AS, c(1,5))
+sapply(tf15, round, 2, simplify = FALSE)
+```
+
+there is also this.
+
+```{r}
+inspection_scfa(res)
+```
+
+
+Further developments will follow.
 
 <!-- The first output tells hom many factors NEST suggests. We can also consult the summary with -->
 
@@ -141,6 +179,6 @@ a = TRUE) -->
 
 # How to cite
 
-Caron, P.-O. (2025). *SignalCancellation*. https://github.com/quantmeth/SignalCancellation
+Caron, P.-O. & Achim, A. (2025). *SignalCancellation*. https://github.com/quantmeth/SignalCancellation
 
 # References

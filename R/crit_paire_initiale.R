@@ -1,7 +1,9 @@
-crit_paire_initiale <- function(AS,a,b,DT=NULL){
+crit_paire_initiale <- function(AS, a, b, DT = NULL){
   # DT, si présent est soit un remplacement pour AS$Gs, 
   # soit la liste des rangs de colonnes de AS$GS à utiliser comme témoins
   inv <- FALSE  # être sur que c'est défini
+  # POC tem ici
+  tem <- AS$pertinent
   if (is.matrix(DT)) {
     col <- DT[,c(a,b)]
     TEMOINS <- as.matrix(DT[,-c(a,b)])
@@ -15,17 +17,20 @@ crit_paire_initiale <- function(AS,a,b,DT=NULL){
     rB <- which.max(R[b,])
     inv <- R[a,rA] < R[b,rB]
     if (inv) {
-      col <- AS$GS[,c(b,a)]
+      col <- AS$GS[,c(b, a)]
     } else {
-      col <- AS$GS[,c(a,b)]
+      col <- AS$GS[,c(a, b)]
     }
-    tem <- AS$pertinent
+    # POC: J'ai sorti ces trois lignes de la condition et les ai mis à la suite,
+    # car à la ligne 82 : prob <- 1-(1-pr$p)^length(tem), on utilise tem, mais ce
+    # n'est pas fait pour certaines condition de DT.
+    
     tem <- tem[-c(which(tem==a),which(tem==b))]
     TEMOINS <- as.matrix(AS$GS[,tem])   # pour quand ce serait une seule colonne
   }
   #if (a==5 && b==8) browser()
   p <- .001
-  p_c <- matrix(0,nrow=3,ncol=2)
+  p_c <- matrix(0, nrow = 3, ncol = 2)
   #  if (is.matrix(DT)) browser()
   p_c[1,2] <- max(abs(t(col[,1]) %*% TEMOINS))
   p_c[2,1] <- -p
@@ -33,14 +38,14 @@ crit_paire_initiale <- function(AS,a,b,DT=NULL){
   p_c[3,1] <- p
   p_c[3,2] <- max(abs(t(sc1(col %*% c(1,p))) %*%  TEMOINS))
   p_c <- p_c[order(p_c[,2]),]
-  while (p != 0 && p<30){
+  while (p != 0 && p < 30){
     p <- 2 * p
-    cr <- f_crit(-p,col,TEMOINS)
+    cr <- crit_R2(-p,col,TEMOINS)
     if (cr < p_c[3,2]) {
       p_c[3,] <- c(-p,cr)
       p_c <- p_c[order(p_c[,2]),]
     }
-    cr <- f_crit(p,col,TEMOINS)
+    cr <- crit_R2(p,col,TEMOINS)
     if (cr < p_c[3,2]) {
       p_c[3,] <- c(p,cr)
       p_c <- p_c[order(p_c[,2]),]
@@ -59,20 +64,21 @@ crit_paire_initiale <- function(AS,a,b,DT=NULL){
   }
   dlim <- limites[2]-limites[1]
   if (dlim<=.002) {
-    out <- optimize(f_crit,limites,col,TEMOINS)
+    out <- optimize(crit_R2, limites, col, TEMOINS)
   } else {
     pas <- (limites[2]-limites[1])/20
     li <- seq(limites[1],limites[2],pas)
     cr <- li
     for (p in 1:length(li))
-      cr[p] <- f_crit(li[p],col,TEMOINS)
+      cr[p] <- crit_R2(li[p],col,TEMOINS)
     limites <- limites_balayage(li,cr)
     #if (!is.null(DT)) browser()
-    out <- optimize(f_crit,limites,col,TEMOINS)
+    out <- optimize(crit_R2, limites, col, TEMOINS)
   }
   po <- out$minimum
   crit <- out$objective
-  pr <- prodCorr(crit,AS$N)
+  
+  pr <- prodCorr(crit, AS$N)
   prob <- 1-(1-pr$p)^length(tem)
   cc <- 1:2
   if (inv){
@@ -85,8 +91,8 @@ crit_paire_initiale <- function(AS,a,b,DT=NULL){
 }
 
 
-f_crit <- function(p,col,TEMOINS)
-  max(abs(t(sc1(col %*% c(1,-p))) %*%  TEMOINS))
+# f_crit <- function(p,col,TEMOINS)
+#   max(abs(t(sc1(col %*% c(1,-p))) %*%  TEMOINS))
 
 limites_balayage <- function(li,cr){
   np <- length(li)
