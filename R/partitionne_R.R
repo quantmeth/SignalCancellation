@@ -1,3 +1,16 @@
+#' Partionne une matrice de corrélation en matrice de corrélation adimensionnelle
+#'
+#' @param R A correlation matrix.
+#' @param N Sample size.
+#' @param ote vVcteur de identifiant des collonn, length(ote) doit être paire et >= 2. 
+#'
+#' @returns A matrice contenant les corrélations adimensionnelles dans le triangle inférieure et les valeurs p  dans le triangle supérieur.
+#' @export
+#'
+#' @examples
+#' partionne_R(R = Rnest::tabachnick_fidell2019,
+#'             N = 176,
+#'             ote = c(2,3))
 partitionne_R <- function(R,N,ote){
   # on devrait commencer par tester l'annulation des variables de ote
   ote <- matrix(ote,nrow=2)
