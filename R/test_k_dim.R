@@ -9,7 +9,7 @@ test_k_dim <- function(AS,k){
   } else {
     if (k<2) stop("Ne marche pas pour 1 dimension")
     # fa <- Rnest::fareg(ASk$R,k)
-    fa <- fareg(ASk$R,k)
+    fa <- Rnest::fareg(ASk$R,k)
     Rreduit <- ASk$R
     diag(Rreduit) <- fa$h2
     if (k>2){
@@ -41,21 +41,15 @@ test_k_dim <- function(AS,k){
   }
   var <- setdiff(1:ASk$nv,tuple)
   satur <- matrix(0,nrow=ASk$nv,ncol=k) # faut-il un ajustement pour les orphelines?
-  ampl <- sqrt(fa$h2) # longueur estimée du signal de chaque variable 
-  diag(satur[tuple,]) <-ampl[tuple]  # poids des variables explicatives sur leur direction
-  # dSat <- sqrt(fa$h2[tuple])
-  # diag(satur[tuple,]) <- dSat
-  VE <- sweep(ASk$GS[,tuple],2,ampl[tuple],"/")
-  browser
+  dSat <- sqrt(fa$h2[tuple])
+  diag(satur[tuple,]) <- dSat
   out <- NULL
   for (k in var){
     variables <- c(k,tuple)
-    # if (k==10) browser()
     ou <- optim_tuple(ASk,variables)
     satur[k,] <- -ou$meilPoids[-1] * dSat
     out <- rbind(out,c(variables,ou$prob))
   }
-  browser()
   R <- Rreduit[tuple,tuple]
   d <- diag(1/sqrt(diag(R)))
   R <- d %*% R %*% d

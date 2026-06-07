@@ -122,9 +122,19 @@ scfa <- function(.data, ..., n = NULL, alpha = .05, max.fact = NULL, missing = N
   
   # METTRE un chec pour k=0 etk=1
   for(k in 2:max.fact){
+    if(k == 1){
+      # TODO
+      # O and 1
+      RANG <- t(rbind(AA$Cpaires, AA$Prob))
+      AA$Prob
+      
+    } else {
+    
+    
     out[[k-1]] <- test_k_dim(AA, k)
     # add convergence issue?
     if(out[[k-1]]$prob > R$alpha) break
+    }
   }
   
   sortie <- list(
