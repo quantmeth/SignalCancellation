@@ -10,7 +10,7 @@ test_proj <- function(AS,cx,cy,srce=NULL){
   ne <- length(v_excl)
   x <- which(cx==AS$excl_cibles)
   y <- which(cy==AS$excl_cibles)
-  if (is.null(x) || is.null(y)) error("cx et cy doivent être des rangs de variables inclus dans AS$excl_cibles")
+  if (is.null(x) || is.null(y)) stop("cx et cy doivent \u00EAtre des rangs de variables inclus dans AS$excl_cibles")
   XX <- matrix(NA,nrow=AS$nv,ncol=ne+1)
   YY <- matrix(NA,nrow=AS$nv,ncol=ne+1)
   XX[,1] <- AS$GS[,cx]

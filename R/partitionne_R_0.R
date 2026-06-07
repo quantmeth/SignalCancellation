@@ -18,7 +18,7 @@ partitionne_R <- function(R,N,ote){
     rr <- 1
   sb <- sa
   sa <- sb %*% chol(rr)
-  browser()
+  #browser()
   p1 <- sb %*% rr %*% t(sb)
   p1 <- p1[-ote,-ote]
   dp1 <- diag(p1)

@@ -13,6 +13,10 @@
 #'
 #' @returns A list.
 #' @export
+#' 
+#' @importFrom stats as.dist cor cov cov2cor hclust median optim optimize pchisq pf pnorm pt qnorm qt runif
+#' @importFrom utils combn tail
+#' @importFrom Rnest fareg
 #'
 #' @author André Achim & P.-O. Caron
 #'

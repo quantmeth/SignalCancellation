@@ -72,7 +72,7 @@ optim_exclusion <- function(DatCol, po_init = NULL){
       Rvb <- Rv[2]
       vv <- sqrt(Rva * Rvb / Rab) * sign(Rva)
       aa <- sqrt(Rab * Rva / Rvb)    # aa toujours positif
-      if (is.na(aa) || is.na(vv)) browser()
+    #  if (is.na(aa) || is.na(vv)) browser()
       po <- vv / aa
     }
   } else {

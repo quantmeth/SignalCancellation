@@ -28,7 +28,7 @@ tune_h2 <- function(AS, tuple,
                         details = res_cur$details)
   if (prob_cur > zone[2]) {
     message(sprintf(
-      "Prob initiale = %.4f > %.2f : conclusion déjà positive, ajustement inutile.",
+      "Prob initiale = %.4f > %.2f : conclusion d\u00E9j\u00E0 positive, ajustement inutile.",
       prob_cur, zone[2]))
     return(invisible(retour_neutre))
   }
@@ -39,7 +39,7 @@ tune_h2 <- function(AS, tuple,
     return(invisible(retour_neutre))
   }
 
-  cat(sprintf("Prob initiale : %.4f  [zone d'ambiguïté : %.2f – %.2f]\n",
+  cat(sprintf("Prob initiale : %.4f  [zone d'ambig\u00EFt\u00E9 : %.2f - %.2f]\n",
               prob_cur, zone[1], zone[2]))
 
   prob_init  <- prob_cur   # conservé pour prob_base dans le retour
@@ -81,17 +81,17 @@ tune_h2 <- function(AS, tuple,
   # Rapport
   modif <- which(round(h2_cur / h2_base, 8) != 1)
   if (length(modif) == 0) {
-    cat("Aucun ajustement utile trouvé dans la grille.\n")
+    cat("Aucun ajustement utile trouv\u00E9 dans la grille.\n")
   } else {
     cat(sprintf("Prob finale : %.4f\n", prob_cur))
-    cat("Ajustements appliqués :\n")
+    cat("Ajustements appliqu\u00E9s :\n")
     for (j in modif)
-      cat(sprintf("  var %d : h2 %.4f → %.4f  (×%.2f)\n",
+      cat(sprintf("  var %d : h2 %.4f \u2192 %.4f  (\u00D7%.2f)\n",
                   j, h2_base[j], h2_cur[j], h2_cur[j] / h2_base[j]))
     if (prob_cur >= 0.05)
-      cat(sprintf("  → prob ≥ .05 : le modèle à k=%d dimensions devient acceptable.\n", k))
+      cat(sprintf("  \u2192 prob \u2265 .05 : le mod\u00E8le  k=%d dimensions devient acceptable.\n", k))
     else
-      cat(sprintf("  → prob reste < .05 : le modèle à k=%d reste rejeté malgré les ajustements.\n", k))
+      cat(sprintf("  \u2192 prob reste < .05 : le mod\u00E8le \u00E0 k=%d reste rejet\u00E9 malgr\u00E9 les ajustements.\n", k))
   }
 
   list(h2       = h2_cur,

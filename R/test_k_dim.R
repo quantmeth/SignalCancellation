@@ -25,7 +25,7 @@ test_k_dim <- function(AS,k){
             meilleur <- cmb[,j]
           }
         }
-        if (ei<=0) error('Anomalie: aucun ',k,'-tuple avec toutes ses valeurs propres positives')
+        if (ei<=0) stop('Anomalie: aucun ',k,'-tuple avec toutes ses valeurs propres positives')
         ou <- optim_tuple(AS,meilleur);
         return(list(meilleur=meilleur,stats=c(ou$prob,ou$cor,ei,ou$poids)))
         # stats: 1 prob, 1 min(corr), 1 k-ieme eig val, k*k poids

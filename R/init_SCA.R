@@ -7,7 +7,7 @@ init_SCA <- function(R, N = NULL,seuils=NULL){
   iet <-  1 / AS$et
   AS$R <- AS$R*(iet %*% t(iet))
   #  browser()
-  if(det(AS$R) < 0) stop("\nLa matrice de corrélation n'a pas un déterminant positif.\n")
+  if(det(AS$R) < 0) stop("\nLa matrice de corr\u00E9lation n'a pas un d\u00E9terminant positif.\n")
   AS$nv <- ncol(AS$R)
   AS$pertinent <- 1:AS$nv  # avant d'exclure les variables orphelines
   # if (isSymmetric(AS$dat))
