@@ -1,4 +1,4 @@
-init_SCA <- function(R, N = NULL,seuils=NULL){
+init_SCA <- function(R, N = NULL, seuils=NULL){
   if (is.null(seuils)) seuils <- c(.001,.25) 
   AS <- list(dat = R,seuils=seuils)
   if(is.null(N)) {AS$N = nrow(R)} else {AS$N = N}

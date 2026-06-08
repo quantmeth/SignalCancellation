@@ -11,10 +11,10 @@ partitionne_R(R, N, ote)
 
 \item{N}{Sample size.}
 
-\item{ote}{vVcteur de identifiant des collonn, length(ote) doit être paire et >= 2.}
+\item{ote}{Vecteur d"identifiant des colonne. length(ote) doit être paire et >= 2.}
 }
 \value{
-A matrice contenant les corrélations adimensionnelles dans le triangle inférieure et les valeurs p  dans le triangle supérieur.
+Une matrice contenant les corrélations adimensionnelles dans le triangle inférieure et les valeurs p  dans le triangle supérieur.
 }
 \description{
 Partionne une matrice de corrélation en matrice de corrélation adimensionnelle

@@ -39,7 +39,7 @@ FP_methodes2 <- function(FS, N, ote, zero=NULL, nrep=10){
     
     # Rp <- corr_partielles(R,N,ote)$Rp
     # out[1:nc,k] <- Rp[upper.tri(Rp)]
-    Rp <- partitionne_R(R,N,ote)
+    Rp <- partitionne_R(R,N,ote)$p1 # POC : ADDED $p1
     out[(nc+1):(2*nc),k] <- Rp[upper.tri(Rp)]
   }
   sig <- t(matrix(rowSums(0+(out<.05),na.rm =TRUE),ncol=2))

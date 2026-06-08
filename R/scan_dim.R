@@ -1,6 +1,6 @@
-#' Signal Cancellation Factor Analysis
+#' Signal Cancellation Analysis of Number of Dimensions
 #'
-#' @description \code{scfa} is used to identify the number of factors to retain in exploratory factor analysis.
+#' @description \code{scan_dim} is used to identify the number of factors to retain in exploratory factor analysis.
 #'
 #' @param .data  data frame, a numeric matrix, covariance matrix or correlation matrix from which to determine the number of factors.
 #' @param ... See details.
@@ -10,22 +10,23 @@
 #' @param missing todo
 #' @param cluster todo
 #' @param ordered todo
+#' @param simulation FALSE
 #'
 #' @returns A list.
 #' @export
 #' 
-#' @importFrom stats as.dist cor cov cov2cor hclust median optim optimize pchisq pf pnorm pt qnorm qt runif
+#' @importFrom stats lm as.dist cor cov cov2cor hclust median optim optimize pchisq pf pnorm pt qnorm qt runif
 #' @importFrom utils combn tail
 #' @importFrom Rnest fareg
 #'
 #' @author André Achim & P.-O. Caron
 #'
-#' @aliases SCFA
+#' @aliases SCAN_DIM SCAN_Dim
 #' 
 #' @examples
 #' R <- Rnest::tabachnick_fidell2019
-#' scfa(R, n = 175)
-scfa <- function(.data, ..., n = NULL, alpha = .05, max.fact = NULL, missing = NULL, cluster = NULL, ordered = NULL){
+#' scan_dim(R, n = 175)
+scan_dim <- function(.data, ..., n = NULL, alpha = .05, max.fact = NULL, missing = NULL, cluster = NULL, ordered = NULL, simulation = FALSE){
   # TO ADD TODO
   # missing = "fiml", cluster = NULL, ordered = NULL
   # pour l'instant missing, cluster et ordered ne sont pas utilisé
@@ -117,7 +118,7 @@ scfa <- function(.data, ..., n = NULL, alpha = .05, max.fact = NULL, missing = N
   # check .max.fact ####
   if(is.null(max.fact)) max.fact <- Rnest::Ledermann(ncol(R$cor))-1 #ncol(R$cor)-1 
   
-  # SCFA ####
+  # scan_dim ####
   AA <- init_SCA(R = R$cor, N = R$n, seuils = R$alpha)
   
   # is alpha the same as seuils? 
@@ -125,31 +126,46 @@ scfa <- function(.data, ..., n = NULL, alpha = .05, max.fact = NULL, missing = N
   out  <- list()
   
   # METTRE un chec pour k=0 etk=1
-  for(k in 2:max.fact){
-    if(k == 1){
-      # TODO
-      # O and 1
-      RANG <- t(rbind(AA$Cpaires, AA$Prob))
-      AA$Prob
-      
-    } else {
+  # TDO
+  if(simulation){
+    
+    k <- list(nfactors = c(scand1 = scand_poc(AA),
+                           scand3 = scand3_poc(AA)))
     
     
-    out[[k-1]] <- test_k_dim(AA, k)
-    # add convergence issue?
-    if(out[[k-1]]$prob > R$alpha) break
+  } else {
+    # REAL OUTPUT
+    
+    for(k in 2:max.fact){
+      if(k == 1){
+        # TODO
+        # O and 1
+        
+        RANG <- t(rbind(AA$Cpaires, AA$Prob))
+        tuple <- 4
+        CHOIX <- c(which(RANG[,1]==tuple),
+                   which(RANG[,2]==tuple))
+        
+        z <- qnorm(RANG[CHOIX,3])
+        pr <- pnorm(sum(z)/sqrt(length(z)));
+        
+        out[[k-1]] <- test_k_dim(AA, k) # scand or seq_k_dim
+        # add convergence issue?
+        if(out[[k-1]]$prob > R$alpha) break
+      }
     }
   }
   
   sortie <- list(
     nfactors = k,
     details = R,
-    scfa = out,
+    scan_dim = out,
     AS = AA
   )
-
   
   return(sortie)
+  
+  
   # add class
   # add print
   # add summary
